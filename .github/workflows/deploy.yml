@@ -20,25 +20,22 @@ jobs:
       - name: Copy pem file to runner
         run: |
           echo "$SSH_PRIVATE_KEY" > work-laptop.pem
-          chmod 400 work-laptop.pem
+          chmod 600 work-laptop.pem
 
       - name: SSH into EC2 and Deploy
-        uses: appleboy/ssh-action@master  # Use a specific version here
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: work-laptop.pem
-          script: |
-            cd /home/ubuntu/express-mongodb
-            echo "Current directory: $(pwd)"
-            ls -l
-            git pull origin main
-            echo "Git pull completed"
-            npm install
-            echo "npm install completed"
-            npm install express
-            npm install mongoose
-            npm install nodemon
-            npm install dotenv
-            echo "Dependencies installed"
-            npm start
+        run: |
+          ssh -i "work-laptop.pem" ubuntu@ec2-18-136-193-226.ap-southeast-1.compute.amazonaws.com <<EOF
+          cd /home/ubuntu/express-mongodb
+          echo "Current directory: \$(pwd)"
+          ls -l
+          git pull origin main
+          echo "Git pull completed"
+          npm install
+          echo "npm install completed"
+          npm install express
+          npm install mongoose
+          npm install nodemon
+          npm install dotenv
+          echo "Dependencies installed"
+          npm start
+          EOF
