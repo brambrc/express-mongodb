@@ -1,35 +1,44 @@
-name : Deploy express-mongodb to aws
+name: Deploy express-mongodb to AWS
+
 on:
   push:
     branches:
       - main
 
 jobs:
- deploy:
-  runs-on: ubuntu-latest
-  steps: 
-  - uses: actions/checkout@v2
-  - name: Use Node.js 12.x
-    uses: actions/setup-node@v1
-    with:
-      node-version: '12.x'
-  - name: Copy pem file to runner
-    run: |
-      echo "$SSH_PRIVATE_KEY" > work-laptop.pem
-      chmod 600 work-laptop.pem
+  deploy:
+    runs-on: ubuntu-latest
 
-  - name: SSH into EC2 and Deploy
-    uses: appleboy/ssh-action@master
-    with:
-      host: ${{ secrets.HOST }}
-      username: ${{ secrets.USERNAME }}
-      key: ./work-laptop.pem
-      script: |
-        cd /home/ubuntu/express-mongodb
-        git pull origin main
-        npm install
-        npm install express
-        npm install mongoose
-        npm install nodemon
-        npm install dotenv
-        npm start
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+
+      - name: Copy pem file to runner
+        run: |
+          echo "$SSH_PRIVATE_KEY" > work-laptop.pem
+          chmod 600 work-laptop.pem
+
+      - name: SSH into EC2 and Deploy
+        uses: appleboy/ssh-action@v1  # Use a specific version here
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: work-laptop.pem
+          script: |
+            cd /home/ubuntu/express-mongodb
+            echo "Current directory: $(pwd)"
+            ls -l
+            git pull origin main
+            echo "Git pull completed"
+            npm install
+            echo "npm install completed"
+            npm install express
+            npm install mongoose
+            npm install nodemon
+            npm install dotenv
+            echo "Dependencies installed"
+            npm start
