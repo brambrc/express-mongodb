@@ -24,7 +24,7 @@ jobs:
 
       - name: SSH into EC2 and Deploy
         run: |
-          ssh -i "work-laptop.pem" ubuntu@ec2-18-136-193-226.ap-southeast-1.compute.amazonaws.com <<EOF
+          ssh -i "work-laptop.pem" ubuntu@ec2-18-136-193-226.ap-southeast-1.compute.amazonaws.com
           cd /home/ubuntu/express-mongodb
           echo "Current directory: \$(pwd)"
           ls -l
